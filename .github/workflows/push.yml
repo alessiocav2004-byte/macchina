@@ -1,0 +1,45 @@
+name: Build & Push Docker Image
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Scarica il codice
+        uses: actions/checkout@v4
+
+      # Configura l'emulatore per compilare per ARM64 (Oracle Cloud Ampere)
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      # Configura il sistema di build avanzato di Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login al GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compila e Carica l'immagine
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          # Compila per PC (x86_64) e per Oracle Cloud ARM64 (aarch64)
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ghcr.io/alessiocav2004-byte/macchina:main
+            ghcr.io/alessiocav2004-byte/macchina:latest
