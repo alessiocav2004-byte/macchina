@@ -1,0 +1,30 @@
+name: Sync Upstream Daily
+
+on:
+  schedule:
+    # Esegue ogni giorno alle 04:00 UTC
+    - cron: '0 4 * * *'
+  # Consente anche l'esecuzione manuale dalla tab "Actions"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Sync upstream changes
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
+        with:
+          upstream_sync_repo: qwertyuiop8899/toastflix-sidecar
+          upstream_sync_branch: main
+          target_sync_branch: main
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+          # Se il fork ha commit personali divergenti, non fallisce bruscamente
+          test_mode: false
