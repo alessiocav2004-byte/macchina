@@ -478,7 +478,7 @@ async def test_providers(quick: int = 0):
         "mode": "Diretto (senza proxy)",
     }
     try:
-        async with httpx.AsyncClient(timeout=8.0, follow_redirects=True) as client:
+        async with httpx.AsyncClient(timeout=8.0, follow_redirects=True, verify=False) as client:
             resp_vix = await client.get("https://vixsrc.to/cdn-cgi/trace", headers={"User-Agent": "Mozilla/5.0"})
             if resp_vix.status_code == 200:
                 fonte1.update({
@@ -508,7 +508,7 @@ async def test_providers(quick: int = 0):
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     }
-    kwargs = {"timeout": 10.0, "follow_redirects": True}
+    kwargs = {"timeout": 10.0, "follow_redirects": True, "verify": False}
     if proxy:
         kwargs["proxy"] = proxy
     try:
